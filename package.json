@@ -1,0 +1,138 @@
+{
+  "name": "note-gpt",
+  "displayName": "noteGPT",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ye-will/note-gpt.git"
+  },
+  "description": "Chat with GPT and note in markdown",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "license": "MIT",
+  "pricing": "Free",
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "noteGPT",
+      "properties": {
+        "noteGPT.provider": {
+          "order": 0,
+          "scope": "window",
+          "type": "string",
+          "default": "openai",
+          "enum": [
+            "openai",
+            "azure"
+          ],
+          "description": "API schema"
+        },
+        "noteGPT.model": {
+          "order": 1,
+          "scope": "window",
+          "type": "string",
+          "default": "gpt-3.5-turbo",
+          "description": "Default model to use"
+        },
+        "noteGPT.temperature": {
+          "order": 2,
+          "scope": "window",
+          "type": "number",
+          "default": 1,
+          "description": "Model temperature"
+        },
+        "noteGPT.endpoint": {
+          "order": 3,
+          "scope": "window",
+          "type": "string",
+          "description": "Api endpoint if using Azure OpenAI"
+        },
+        "noteGPT.systemPrompt": {
+          "order": 4,
+          "scope": "window",
+          "type": "string",
+          "editPresentation": "multilineText",
+          "description": "Default system prompt"
+        },
+        "noteGPT.messageHeader": {
+          "order": 5,
+          "scope": "window",
+          "type": "boolean",
+          "default": true,
+          "description": "Add header to every message"
+        },
+        "noteGPT.proxyURL": {
+          "order": 6,
+          "scope": "window",
+          "type": "string",
+          "description": "Proxy URL"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "note-gpt.completion",
+        "title": "noteGPT: Completion"
+      },
+      {
+        "command": "note-gpt.new-user-message",
+        "title": "noteGPT: New user message"
+      },
+      {
+        "command": "note-gpt.new-dialogue",
+        "title": "noteGPT: New dialogue"
+      },
+      {
+        "command": "note-gpt.set-api-key",
+        "title": "noteGPT: Set API key"
+      },
+      {
+        "command": "note-gpt.clear-api-key",
+        "title": "noteGPT: Clear API key"
+      }
+    ]
+  },
+  "scripts": {
+    "vsce": "vsce",
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/js-yaml": "^4.0.5",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "20.2.5",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "@vscode/test-electron": "^2.3.2",
+    "@vscode/vsce": "^2.20.1",
+    "eslint": "^8.41.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "ts-loader": "^9.4.3",
+    "typescript": "^5.1.3",
+    "webpack": "^5.85.0",
+    "webpack-cli": "^5.1.1"
+  },
+  "dependencies": {
+    "eventsource-parser": "^1.0.0",
+    "http-proxy-agent": "^7.0.0",
+    "https-proxy-agent": "^7.0.1",
+    "node-fetch": "^3.3.2",
+    "socks-proxy-agent": "^8.0.1"
+  }
+}
