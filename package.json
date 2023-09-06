@@ -1,6 +1,7 @@
 {
   "name": "note-gpt",
   "displayName": "noteGPT",
+  "publisher": "ye-will",
   "icon": "icon.png",
   "repository": {
     "type": "git",
