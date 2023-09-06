@@ -6,7 +6,7 @@ Chat with GPT and note in markdown.
 
 ## Usage
 
-1. Open **Command Palette** whit `⇧⌘P` or `Ctrl+Shift+P`, select **noteGPT: New dialogue** to create a new dialogue markdown file
+1. Open **Command Palette** with `⇧⌘P` or `Ctrl+Shift+P`, select **noteGPT: New dialogue** to create a new dialogue markdown file
 2. Create a user message with **noteGPT: New user message**
 3. Input the user text after the html comment `<!-- {role: user} -->`
 4. Open **Command Palette** and select **noteGPT: Completion**
