@@ -40,7 +40,17 @@ export function activate(context: vscode.ExtensionContext) {
 		}, async () => {
 			const editor = new Editor(activeEditor);
 			const params = withDialogue({messages: []}, dialogue);
-			await model.completionsStreaming?.(params, async delta => {
+			if (!model.completionsStreaming) {
+				const message = await model.completions(params);
+				await editor.appendLines(formatMessage({
+					options: {
+						role: message.role
+					},
+					content: (config.messageHeader ? `## ${capitalize(message.role)}\n\n` : "\n") + message.content
+				}));
+				return;
+			}
+			for await (const delta of model.completionsStreaming(params)) {
 				if (delta.role !== undefined) {
 					await editor.appendLines(formatMessage({
 						options: {
@@ -53,7 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
 				if (delta.content !== undefined) {
 					await editor.appendWords(delta.content);
 				}
-			});
+			}
 		});
 	};
 

@@ -16,5 +16,5 @@ export type CompletionParams = {
 
 export type Model = {
   completions(params: CompletionParams): Promise<Message>;
-  completionsStreaming?(params: CompletionParams, cb: (delta: MessageDelta) => Promise<void>): Promise<void>;
+  completionsStreaming?(params: CompletionParams): AsyncIterable<MessageDelta>;
 };

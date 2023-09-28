@@ -40,7 +40,7 @@ export class OpenAILike implements Model {
     return json.choices[0].message;
   }
 
-  async completionsStreaming(d: CompletionParams, cb: (delta: MessageDelta) => Promise<void>): Promise<void> {
+  async *completionsStreaming(d: CompletionParams): AsyncIterable<MessageDelta> {
     const response = await this.completionsRequest(d, true);
     if (!response.body) {
       throw new Error("Unexpected response");
@@ -69,10 +69,9 @@ export class OpenAILike implements Model {
       const data = decoder.decode(chunk as Buffer);
       parser.feed(data);
       while (deltas.length > 0) {
-        await cb(deltas.shift() as MessageDelta);
+        yield deltas.shift() as MessageDelta;
       }
     }
-    return;
   }
 }
 
