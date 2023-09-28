@@ -14,7 +14,7 @@ export default class Azure extends OpenAILike {
     super();
   }
 
-  protected override async completionsRequest(d: CompletionParams, stream: boolean): Promise<Response> {
+  protected override async completionsRequest(d: CompletionParams, stream: boolean, ac?: AbortController): Promise<Response> {
     const messages = [
       ...(d.system !== undefined ? [{"role": "system", "content": d.system}] : []),
       ...d.messages];
@@ -32,7 +32,8 @@ export default class Azure extends OpenAILike {
         ...(d.temperature ? {temperature: d.temperature} : {}),
         ...(stream ? {stream: true} : {})
       }),
-      agent: this.agent
+      agent: this.agent,
+      signal: ac?.signal
     });
     if (response.status !== 200) {
       const channel = getOutputChannel();

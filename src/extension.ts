@@ -35,13 +35,15 @@ export function activate(context: vscode.ExtensionContext) {
 		const model = getModel(config, key, dialogue.options.model, agent);
 		await vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
-			cancellable: false,
+			cancellable: true,
 			title: "Thinking..."
-		}, async () => {
+		}, async (_, token) => {
 			const editor = new Editor(activeEditor);
 			const params = withDialogue({messages: []}, dialogue);
+			const abortController = new AbortController();
+			token.onCancellationRequested(() => abortController.abort());
 			if (!model.completionsStreaming) {
-				const message = await model.completions(params);
+				const message = await model.completions(params, abortController);
 				await editor.appendLines(formatMessage({
 					options: {
 						role: message.role
@@ -50,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}));
 				return;
 			}
-			for await (const delta of model.completionsStreaming(params)) {
+			for await (const delta of model.completionsStreaming(params, abortController)) {
 				if (delta.role !== undefined) {
 					await editor.appendLines(formatMessage({
 						options: {
@@ -97,6 +99,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const completionCommand = vscode.commands.registerCommand('note-gpt.completion', () => {
 		completion().then(() => undefined, reason => {
+			if (reason?.name === "AbortError") {
+				return;
+			}
 			vscode.window.showErrorMessage(reason.toString());
 		});
 	});

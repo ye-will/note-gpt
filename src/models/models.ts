@@ -15,6 +15,6 @@ export type CompletionParams = {
 };
 
 export type Model = {
-  completions(params: CompletionParams): Promise<Message>;
-  completionsStreaming?(params: CompletionParams): AsyncIterable<MessageDelta>;
+  completions(params: CompletionParams, ac?: AbortController): Promise<Message>;
+  completionsStreaming?(params: CompletionParams, ac?: AbortController): AsyncIterable<MessageDelta>;
 };

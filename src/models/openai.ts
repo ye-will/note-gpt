@@ -27,12 +27,12 @@ function isCompletionStreamingResponse(obj: unknown): obj is CompletionStreaming
 }
 
 export class OpenAILike implements Model {
-  protected async completionsRequest(d: CompletionParams, stream: boolean): Promise<Response> {
+  protected async completionsRequest(d: CompletionParams, stream: boolean, ac?: AbortController): Promise<Response> {
     throw new Error("Not implemented");
   }
 
-  async completions(d: CompletionParams): Promise<Message> {
-    const response = await this.completionsRequest(d, false);
+  async completions(d: CompletionParams, ac?: AbortController): Promise<Message> {
+    const response = await this.completionsRequest(d, false, ac);
     const json = await response.json();
     if (!isCompletionResponse(json)) {
       throw new Error("Unexpected response");
@@ -40,8 +40,8 @@ export class OpenAILike implements Model {
     return json.choices[0].message;
   }
 
-  async *completionsStreaming(d: CompletionParams): AsyncIterable<MessageDelta> {
-    const response = await this.completionsRequest(d, true);
+  async *completionsStreaming(d: CompletionParams, ac?: AbortController): AsyncIterable<MessageDelta> {
+    const response = await this.completionsRequest(d, true, ac);
     if (!response.body) {
       throw new Error("Unexpected response");
     }
@@ -80,7 +80,7 @@ export default class OpenAI extends OpenAILike {
     super();
   }
 
-  protected override async completionsRequest(d: CompletionParams, stream: boolean): Promise<Response> {
+  protected override async completionsRequest(d: CompletionParams, stream: boolean, ac?: AbortController): Promise<Response> {
     const messages = [
       ...(d.system !== undefined ? [{"role": "system", "content": d.system}] : []),
       ...d.messages];
@@ -98,7 +98,8 @@ export default class OpenAI extends OpenAILike {
         ...(d.temperature ? {temperature: d.temperature} : {}),
         ...(stream ? {stream: true} : {})
       }),
-      agent: this.agent
+      agent: this.agent,
+      signal: ac?.signal
     });
     if (response.status !== 200) {
       const channel = getOutputChannel();
